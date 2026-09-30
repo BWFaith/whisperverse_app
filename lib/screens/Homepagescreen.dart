@@ -1,5 +1,10 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:whisperverse_app/categories/listofcategory.dart';
+import 'package:whisperverse_app/stories/storylist.dart';
+import 'package:whisperverse_app/widgets/storybookcard.dart';
 
 class Homepagescreen extends StatefulWidget {
   const new({super.key});
@@ -9,12 +14,15 @@ class Homepagescreen extends StatefulWidget {
 }
 
 class _HomepagescreenState extends State<Homepagescreen> {
+  final searchcontroller = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 243, 243, 243),
       drawer: Drawer(),
       appBar: AppBar(
+        leadingWidth: 30.0,
         forceMaterialTransparency: true,
         title: Image.asset(width: 100, 'assets/images/logo2.png'),
         actions: [
@@ -23,49 +31,103 @@ class _HomepagescreenState extends State<Homepagescreen> {
       ),
       body:
           //fonts: Heading - Fredoka, Subheading - Nunito, Body - Literata
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 20.0,
-              vertical: 15.0,
-            ),
-            child: Column(
-              children: [
-                Material(
-                  borderRadius: BorderRadius.circular(20),
-                  elevation: 1,
-                  child: Container(
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Colors.white30,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    height: 40,
-                    width: 150,
+          SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20.0,
+                vertical: 15.0,
+              ),
+              child: Column(
+                children: [
+                  Material(
+                    borderRadius: BorderRadius.circular(20),
+                    elevation: 1,
+                    child: Container(
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.white30,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      height: 40,
+                      width: double.infinity,
 
-                    child: Row(
-                      children: [
-                        Icon(Icons.search, color: Colors.black45),
-                        Expanded(
-                          child: TextField(
-                            style: GoogleFonts.literata(color: Colors.black45),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        //crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(Icons.search, color: Colors.black45),
+                          SizedBox(width: 5),
+                          Expanded(
+                            child: TextField(
+                              //textAlignVertical: TextAlignVertical.center,
+                              controller: searchcontroller,
+                              decoration: InputDecoration(
+                                isDense: true,
+                                hintText: 'Search your favorite story...',
+                                hintStyle: GoogleFonts.nunito(
+                                  color: Colors.black45,
+                                  fontSize: 14,
+                                ),
+
+                                border: InputBorder.none,
+                              ),
+                              style: GoogleFonts.literata(
+                                color: Colors.black45,
+                                fontSize: 14,
+                              ),
+                            ),
                           ),
-                        ),
-                        Text(
-                          'Search...',
-                          style: GoogleFonts.literata(color: Colors.black45),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                // Text(
-                //   'Hello Faith',
-                //   style: GoogleFonts.fredoka(
-                //     fontSize: 21,
-                //     fontWeight: FontWeight.w500,
-                //   ),
-                // ),
-              ],
+                  SizedBox(height: 10),
+                  SizedBox(
+                    height: 50,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: categorylist.map((value) {
+                        return Container(
+                          margin: EdgeInsets.all(5),
+                          padding: EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black12,
+                                spreadRadius: 0.5,
+                                blurRadius: 0.5,
+                                offset: Offset(0, 1),
+                              ),
+                            ],
+                          ),
+                          child: Text(value.title),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  SizedBox(
+                    height: 200,
+                    child: GridView.builder(
+                      padding: EdgeInsets.all(10),
+                      itemCount: storyList.length,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2, // Number of columns
+                        mainAxisSpacing: 12.0, // Vertical spacing between items
+                        crossAxisSpacing:
+                            12.0, // Horizontal spacing between items
+                        childAspectRatio:
+                            0.75, // Width-to-height ratio of each item
+                      ),
+                      itemBuilder: (context, index) {
+                        return Storybookcard(storymodel: storyList[index]);
+                      },
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
     );

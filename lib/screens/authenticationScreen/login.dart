@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:whisperverse_app/screens/Homepagescreen.dart';
+import 'package:whisperverse_app/screens/authenticationScreen/signupscreen.dart';
 import 'package:whisperverse_app/widgets/mainbuttons.dart';
 
 class LoginPage extends StatefulWidget {
@@ -17,12 +19,9 @@ class _LoginPageState extends State<LoginPage> {
   String _password = '';
 
   void _submitForm() {
-    // 2. Trigger validation across all fields
     if (_formKey.currentState!.validate()) {
-      // 3. Save the form state if validation passes
       _formKey.currentState!.save();
 
-      // Process the validated data (e.g., send to an API backend)
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Processing Data for $_email...')));
@@ -104,15 +103,37 @@ class _LoginPageState extends State<LoginPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Already have an account?',
+                            'Don\'t have an account?',
                             style: GoogleFonts.nunito(fontSize: 15),
                           ),
                           SizedBox(width: 5),
-                          Text(
-                            'Sign up',
-                            style: GoogleFonts.nunito(
-                              fontSize: 15,
-                              color: Colors.blueAccent,
+                          GestureDetector(
+                            onTap: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => Signupscreen(),
+                              ),
+                            ),
+                            child: Text(
+                              'Sign up',
+                              style: GoogleFonts.nunito(
+                                fontSize: 15,
+                                color: Colors.blueAccent,
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          GestureDetector(
+                            onTap: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => Homepagescreen(),
+                              ),
+                            ),
+                            child: Text(
+                              'Home',
+                              style: GoogleFonts.nunito(
+                                fontSize: 15,
+                                color: Colors.blueAccent,
+                              ),
                             ),
                           ),
                           //TextButton(onPressed: () {}, child: Text('Sign Up')),

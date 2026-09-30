@@ -1,10 +1,14 @@
 import 'package:whisperverse_app/categories/categotymodel.dart';
 
 List<Categotymodel> categorylist = [
-  Categotymodel(title: 'Discover'),
-  Categotymodel(title: 'New'),
-  Categotymodel(title: 'History'),
-  Categotymodel(title: 'Nighttale'),
+  Categotymodel(title: 'All'),
   Categotymodel(title: 'Romance'),
-  Categotymodel(title: 'Religious'),
+  Categotymodel(title: 'Mystery & Thriller'),
+  Categotymodel(title: 'Fantasy'),
+  Categotymodel(title: 'Sci-Fi'),
+  Categotymodel(title: 'Horror'),
+  Categotymodel(title: 'Drama'),
+  Categotymodel(title: 'Inspirational'),
+  Categotymodel(title: 'Comedy'),
+  Categotymodel(title: 'Short Stories'),
 ];
