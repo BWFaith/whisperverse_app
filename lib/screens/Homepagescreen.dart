@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:whisperverse_app/categories/listofcategory.dart';
 import 'package:whisperverse_app/stories/storylist.dart';
+import 'package:whisperverse_app/widgets/continuereadingbookcard.dart';
 import 'package:whisperverse_app/widgets/storybookcard.dart';
 
 class Homepagescreen extends StatefulWidget {
@@ -20,7 +21,7 @@ class _HomepagescreenState extends State<Homepagescreen> {
     const int crossAxisCount = 3;
     const double crossAxisSpacing = 10.0;
 
-    const double desiredItemHeight = 250.0;
+    const double desiredItemHeight = 240.0;
 
     final double totalSpacing = crossAxisSpacing * (crossAxisCount - 1);
     final double itemWidth = (screenWidth - totalSpacing) / crossAxisCount;
@@ -29,15 +30,6 @@ class _HomepagescreenState extends State<Homepagescreen> {
 
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 243, 243, 243),
-      drawer: Drawer(),
-      appBar: AppBar(
-        leadingWidth: 30.0,
-        forceMaterialTransparency: true,
-        title: Image.asset(width: 100, 'assets/images/logo2.png'),
-        actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.settings)),
-        ],
-      ),
 
       body:
           //fonts: Heading - Fredoka, Subheading - Nunito, Body - Literata
@@ -92,6 +84,8 @@ class _HomepagescreenState extends State<Homepagescreen> {
                     ),
                   ),
                   SizedBox(height: 10),
+                  Continuereadingbookcard(),
+                  SizedBox(height: 10),
                   SizedBox(
                     height: 50,
                     child: ListView(
@@ -136,6 +130,7 @@ class _HomepagescreenState extends State<Homepagescreen> {
                       return Storybookcard(storymodel: storyList[index]);
                     },
                   ),
+                  SizedBox(height: 30),
                 ],
               ),
             ),

@@ -44,7 +44,6 @@ class Storybookcard extends StatelessWidget {
               //height: 100,
             ),
           ),
-          //Positioned(child: Row(children: [])),
 
           Expanded(
             child: Padding(
@@ -53,23 +52,24 @@ class Storybookcard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Flexible(
-                    child: Text(
-                      storymodel.title,
-                      style: GoogleFonts.nunito(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w400,
-                      ),
+                  Text(
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    storymodel.title,
+                    style: GoogleFonts.nunito(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
-                  Flexible(
-                    child: Text(
-                      storymodel.author,
-                      style: GoogleFonts.nunito(
-                        color: Colors.black45,
-                        fontSize: 12,
-                        fontWeight: FontWeight.normal,
-                      ),
+
+                  Text(
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    storymodel.author,
+                    style: GoogleFonts.nunito(
+                      color: Colors.black45,
+                      fontSize: 10,
+                      fontWeight: FontWeight.normal,
                     ),
                   ),
                 ],

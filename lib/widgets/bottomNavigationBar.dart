@@ -8,6 +8,7 @@ import 'package:whisperverse_app/screens/homepagescreen.dart';
 import 'package:whisperverse_app/screens/discoverscreen.dart';
 
 import 'package:whisperverse_app/screens/profilescreen.dart';
+import 'package:whisperverse_app/widgets/drawerwidget.dart';
 
 class MyBottomnavigationbar extends StatefulWidget {
   const new({super.key});
@@ -29,7 +30,22 @@ class _MyBottomnavigationbarState extends State<MyBottomnavigationbar> {
   Widget build(BuildContext context) {
     final double screenheight = MediaQuery.of(context).size.height;
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 243, 243, 243),
       extendBody: true,
+      drawer: Drawerwidget(),
+      appBar: AppBar(
+        actionsPadding: EdgeInsets.only(right: 5),
+        leadingWidth: 30.0,
+        forceMaterialTransparency: true,
+        title: Image.asset(width: 100, 'assets/images/logo2.png'),
+        actions: [
+          IconButton(onPressed: () {}, icon: const Icon(Icons.settings)),
+          CircleAvatar(
+            radius: 15,
+            child: Image.asset('assets/images/avata.png', fit: BoxFit.cover),
+          ),
+        ],
+      ),
       body: _screens[_currentpageindex],
 
       bottomNavigationBar: CurvedNavigationBar(
