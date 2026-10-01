@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:whisperverse_app/categories/listofcategory.dart';
@@ -18,6 +16,17 @@ class _HomepagescreenState extends State<Homepagescreen> {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    const int crossAxisCount = 3;
+    const double crossAxisSpacing = 10.0;
+
+    const double desiredItemHeight = 250.0;
+
+    final double totalSpacing = crossAxisSpacing * (crossAxisCount - 1);
+    final double itemWidth = (screenWidth - totalSpacing) / crossAxisCount;
+
+    final double dynamicAspectRatio = itemWidth / desiredItemHeight;
+
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 243, 243, 243),
       drawer: Drawer(),
@@ -29,6 +38,7 @@ class _HomepagescreenState extends State<Homepagescreen> {
           IconButton(onPressed: () {}, icon: const Icon(Icons.settings)),
         ],
       ),
+
       body:
           //fonts: Heading - Fredoka, Subheading - Nunito, Body - Literata
           SingleChildScrollView(
@@ -63,7 +73,7 @@ class _HomepagescreenState extends State<Homepagescreen> {
                               controller: searchcontroller,
                               decoration: InputDecoration(
                                 isDense: true,
-                                hintText: 'Search your favorite story...',
+                                hintText: 'Search your favorite story book...',
                                 hintStyle: GoogleFonts.nunito(
                                   color: Colors.black45,
                                   fontSize: 14,
@@ -109,17 +119,16 @@ class _HomepagescreenState extends State<Homepagescreen> {
                   ),
                   SizedBox(height: 10),
                   SizedBox(
-                    height: 200,
+                    height: 500,
                     child: GridView.builder(
-                      padding: EdgeInsets.all(10),
+                      clipBehavior: Clip.hardEdge,
+                      //padding: EdgeInsets.symmetric(vertical: 10),
                       itemCount: storyList.length,
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2, // Number of columns
+                        crossAxisCount: crossAxisCount, // Number of columns
                         mainAxisSpacing: 12.0, // Vertical spacing between items
-                        crossAxisSpacing:
-                            12.0, // Horizontal spacing between items
-                        childAspectRatio:
-                            0.75, // Width-to-height ratio of each item
+                        crossAxisSpacing: crossAxisSpacing, // Horizontal spacing between items
+                        childAspectRatio: dynamicAspectRatio, // Width-to-height ratio of each item
                       ),
                       itemBuilder: (context, index) {
                         return Storybookcard(storymodel: storyList[index]);

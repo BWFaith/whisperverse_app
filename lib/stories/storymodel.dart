@@ -3,7 +3,7 @@ class Book {
   final String title;
   final String author;
   final String description;
-  final dynamic coverImage;
+  final String coverImage;
   final String category;
   final List<String> pages;
   final int totalPages;
