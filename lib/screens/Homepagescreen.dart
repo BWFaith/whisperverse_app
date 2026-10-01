@@ -118,22 +118,23 @@ class _HomepagescreenState extends State<Homepagescreen> {
                     ),
                   ),
                   SizedBox(height: 10),
-                  SizedBox(
-                    height: 500,
-                    child: GridView.builder(
-                      clipBehavior: Clip.hardEdge,
-                      //padding: EdgeInsets.symmetric(vertical: 10),
-                      itemCount: storyList.length,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: crossAxisCount, // Number of columns
-                        mainAxisSpacing: 12.0, // Vertical spacing between items
-                        crossAxisSpacing: crossAxisSpacing, // Horizontal spacing between items
-                        childAspectRatio: dynamicAspectRatio, // Width-to-height ratio of each item
-                      ),
-                      itemBuilder: (context, index) {
-                        return Storybookcard(storymodel: storyList[index]);
-                      },
+
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    clipBehavior: Clip.hardEdge,
+                    //padding: EdgeInsets.symmetric(vertical: 10),
+                    itemCount: storyList.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount, // Number of columns
+                      mainAxisSpacing: 12.0, // Vertical spacing between items
+                      crossAxisSpacing:
+                          crossAxisSpacing, // Horizontal spacing between items
+                      childAspectRatio: dynamicAspectRatio, // Width-to-height ratio of each item
                     ),
+                    itemBuilder: (context, index) {
+                      return Storybookcard(storymodel: storyList[index]);
+                    },
                   ),
                 ],
               ),

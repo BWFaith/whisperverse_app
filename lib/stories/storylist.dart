@@ -5,7 +5,7 @@ List<Book> storyList = [
     id: '001',
     title: 'The Last Letter',
     author: 'Amelia Rivers',
-    description: 'After finding a forgotten letter in an old bookstore, Clara begins a journey that changes the way she understands love, loss, and second chances.',
+    description: 'After finding a forgotten letter in an old bookstore, Clara begins a journey that changes the way she understands love, loss, and second chances...',
     coverImage: 'assets/images/imgae2.jpg',
     category: 'Romance',
     pages: [

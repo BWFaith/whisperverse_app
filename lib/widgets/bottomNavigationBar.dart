@@ -2,10 +2,12 @@ import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:whisperverse_app/screens/Homepagescreen.dart';
-import 'package:whisperverse_app/screens/authenticationScreen/login.dart';
-import 'package:whisperverse_app/screens/authenticationScreen/signupscreen.dart';
-import 'package:whisperverse_app/screens/onboardingscreen.dart';
+import 'package:whisperverse_app/screens/favoritescreen.dart';
+import 'package:whisperverse_app/screens/homepagescreen.dart';
+
+import 'package:whisperverse_app/screens/discoverscreen.dart';
+
+import 'package:whisperverse_app/screens/profilescreen.dart';
 
 class MyBottomnavigationbar extends StatefulWidget {
   const new({super.key});
@@ -18,9 +20,9 @@ class _MyBottomnavigationbarState extends State<MyBottomnavigationbar> {
   int _currentpageindex = 0;
   final List<Widget> _screens = [
     const Homepagescreen(),
-    const Signupscreen(),
-    const LoginPage(),
-    const Onboardingscreen(),
+    const Discoverscreen(),
+    const Favoritescreen(),
+    const Profilescreen(),
   ];
 
   @override
