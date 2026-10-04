@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:whisperverse_app/screens/authenticationScreen/signupscreen.dart';
@@ -12,19 +13,78 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  bool isToggledObscureText = true;
   final _formKey = GlobalKey<FormState>();
 
   // Track input values
   String _email = '';
   String _password = '';
 
-  void _submitForm() {
+  void _submitForm() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Processing Data for $_email...')));
+      showDialog(
+        context: context,
+        builder: (context) {
+          return Center(child: CircularProgressIndicator(color: Colors.white));
+        },
+      );
+
+      //Navigator.of(context).pop();
+
+      try {
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _email,
+          password: _password,
+        );
+
+        // if (userLogin.user != null && context.mounted) {
+        //   Navigator.of(context).pushAndRemoveUntil(
+        //     MaterialPageRoute(builder: (_) => const MyBottomnavigationbar()),
+        //     (route) => false,
+        //   );
+        // }
+
+        print('user logged in');
+        Navigator.pop(context);
+      } on FirebaseAuthException catch (e) {
+        // Navigator.pop(context);
+        // ScaffoldMessenger.of(context).clearSnackBars();
+        // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.code)));
+
+        switch (e.code) {
+          case 'invalid-credential':
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Invalid email or password.')),
+            );
+
+            break;
+          case 'wrong-password':
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text('incorrect password')));
+
+            break;
+          case 'user-not-found':
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text('no user record')));
+
+            break;
+          case 'invalid-email':
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text('Invalid-email')));
+
+            break;
+          default:
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text('No user record')));
+            print('An unknown authentication error occurred: ${e.message}');
+        }
+      } catch (e) {
+        print('A non-Firebase error occurred: $e');
+
+        // showErrorMessage(e.code);
+      }
     }
   }
 
@@ -77,11 +137,24 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
+                          suffixIcon: IconButton(
+                            color: Colors.black45,
+                            onPressed: () {
+                              setState(() {
+                                isToggledObscureText = !isToggledObscureText;
+                              });
+                            },
+                            icon: Icon(
+                              isToggledObscureText
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                            ),
+                          ),
                           labelText: 'Password',
                           border: OutlineInputBorder(),
                         ),
-                        obscureText: true,
+                        obscureText: isToggledObscureText,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your password';
@@ -94,6 +167,21 @@ class _LoginPageState extends State<LoginPage> {
                         onSaved: (value) {
                           _password = value ?? '';
                         },
+                      ),
+                      const SizedBox(height: 5),
+                      GestureDetector(
+                        onTap: () {
+                          // FirebaseAuth.instance.sendPasswordResetEmail(
+                          //   email: _email,
+                          // );
+                        },
+                        child: Text(
+                          'Forgotten Password?',
+                          style: GoogleFonts.nunito(
+                            fontSize: 14,
+                            color: Colors.blueAccent,
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 24),
 
@@ -122,20 +210,7 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                           SizedBox(width: 10),
-                          GestureDetector(
-                            onTap: () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => MyBottomnavigationbar(),
-                              ),
-                            ),
-                            child: Text(
-                              'Home',
-                              style: GoogleFonts.nunito(
-                                fontSize: 15,
-                                color: Colors.blueAccent,
-                              ),
-                            ),
-                          ),
+
                           //TextButton(onPressed: () {}, child: Text('Sign Up')),
                         ],
                       ),

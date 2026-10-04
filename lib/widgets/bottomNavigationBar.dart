@@ -54,7 +54,7 @@ class _MyBottomnavigationbarState extends State<MyBottomnavigationbar> {
         items: [
           CurvedNavigationBarItem(
             child: Icon(
-              Icons.auto_stories_sharp,
+              Icons.auto_stories_outlined,
               size: 30,
               color: Color.fromARGB(255, 243, 243, 243),
             ),

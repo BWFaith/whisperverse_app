@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:whisperverse_app/screens/authenticationScreen/login.dart';
+import 'package:whisperverse_app/widgets/bottomNavigationBar.dart';
 import 'package:whisperverse_app/widgets/mainbuttons.dart';
 
 class Signupscreen extends StatefulWidget {
@@ -11,23 +13,127 @@ class Signupscreen extends StatefulWidget {
 }
 
 class _SignupscreenState extends State<Signupscreen> {
+  bool isToggledObscureText = true;
   final _formKey = GlobalKey<FormState>();
 
   // Track input values
-  final String _username = '';
+  String _username = '';
   String _email = '';
   String _password = '';
 
-  void _submitForm() {
-    // 2. Trigger validation across all fields
+  // void _submitForm() async {
+  //   // showDialog(
+  //   //   context: context,
+  //   //   builder: (context) => CircularProgressIndicator(),
+  //   // );
+  //   try {
+  //     // if (_formKey.currentState!.validate()) {
+  //     //   // 3. Save the form state if validation passes
+  //     //   _formKey.currentState!.save();
+
+  //     //   // Process the validated data (e.g., send to an API backend)
+  //     //   ScaffoldMessenger.of(context).showSnackBar(
+  //     //     SnackBar(content: Text('Processing Data for $_email...')),
+  //     //   );
+  //     // }
+  //     // final credential =
+  //     await FirebaseAuth.instance.createUserWithEmailAndPassword(
+  //       email: _email,
+  //       password: _password,
+  //     );
+  //   } on FirebaseAuthException catch (e) {
+  //     if (e.code == 'weak-password') {
+  //       print('The password provided is too weak.');
+  //     } else if (e.code == 'email-already-in-use') {
+  //       print('The account already exists for that email.');
+  //     }
+  //   } catch (e) {
+  //     //print(e);
+  //     Navigator.pop(context);
+  //   }
+  // }
+
+  void signuserup() async {
     if (_formKey.currentState!.validate()) {
-      // 3. Save the form state if validation passes
       _formKey.currentState!.save();
 
-      // Process the validated data (e.g., send to an API backend)
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Processing Data for $_email...')));
+      showDialog(
+        context: context,
+        builder: (context) {
+          return Center(child: CircularProgressIndicator(color: Colors.white));
+        },
+      );
+      Navigator.of(context).pop();
+    }
+    // ScaffoldMessenger.of(
+    //   context,
+    // ).showSnackBar(SnackBar(content: Text('Processing Data for $_email...')));
+
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _email,
+        password: _password,
+      );
+
+      // if (userAuth.user != null && context.mounted) {
+      //   Navigator.of(context).pushAndRemoveUntil(
+      //     MaterialPageRoute(builder: (_) => const MyBottomnavigationbar()),
+      //     (route) => false,
+      //   );
+      // }
+
+      print('user logged in');
+      // Navigator.of(context).pop();
+    } on FirebaseAuthException catch (e) {
+      // Navigator.pop(context);
+      // ScaffoldMessenger.of(context).clearSnackBars();
+      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.code)));
+
+      switch (e.code) {
+        case 'email-already-in-use':
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('This email is already registered. Please log in.'),
+            ),
+          );
+          print('This email is already registered. Please log in.');
+          Navigator.of(context).pop();
+          break;
+        case 'invalid-email':
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('The email address is not valid.')),
+          );
+          print('The email address is not valid.');
+          Navigator.of(context).pop();
+          break;
+        case 'weak-password':
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'The password is too weak. Choose at least 6 characters.',
+              ),
+            ),
+          );
+          print('The password is too weak. Choose at least 6 characters.');
+          Navigator.of(context).pop();
+          break;
+        case 'operation-not-allowed':
+          print('Email/Password sign up is not enabled in Firebase Console.');
+          break;
+        default:
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'An unknown authentication error occurred: ${e.message}',
+              ),
+            ),
+          );
+          print('An unknown authentication error occurred: ${e.message}');
+      }
+    } catch (e) {
+      print('A non-Firebase error occurred: $e');
+
+      // showErrorMessage(e.code);
     }
   }
 
@@ -72,16 +178,14 @@ class _SignupscreenState extends State<Signupscreen> {
                         validator: (value) {
                           if (value == null ||
                               value.isEmpty ||
-                              value.trim().length < 5) {
-                            return 'Please enter a minimum of 5 characters';
+                              value.trim().length < 4) {
+                            return 'Please enter a minimum of 4 characters';
                           }
-                          if (value.length < 6) {
-                            return 'Password must be at least 6 characters long';
-                          }
+
                           return null;
                         },
                         onSaved: (value) {
-                          _password = value ?? '';
+                          _username = value ?? '';
                         },
                       ),
                       const SizedBox(height: 16),
@@ -111,14 +215,27 @@ class _SignupscreenState extends State<Signupscreen> {
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
+                          suffixIcon: IconButton(
+                            color: Colors.black45,
+                            onPressed: () {
+                              setState(() {
+                                isToggledObscureText = !isToggledObscureText;
+                              });
+                            },
+                            icon: Icon(
+                              isToggledObscureText
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                            ),
+                          ),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.blue),
                           ),
                           labelText: 'Password',
                           border: OutlineInputBorder(),
                         ),
-                        obscureText: true,
+                        obscureText: isToggledObscureText,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your password';
@@ -134,7 +251,10 @@ class _SignupscreenState extends State<Signupscreen> {
                       ),
                       const SizedBox(height: 24),
 
-                      Mainbuttons(onTap: _submitForm, buttonText: 'Sign up'),
+                      Mainbuttons(
+                        onTap: signuserup,
+                        buttonText: 'Create an account',
+                      ),
                       const SizedBox(height: 12),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,

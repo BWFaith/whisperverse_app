@@ -1,9 +1,16 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:whisperverse_app/screens/authscreen.dart';
+
+import 'firebase_options.dart';
+
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:whisperverse_app/screens/onboardingscreen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
   runApp(
     DevicePreview(enabled: !kReleaseMode, builder: (context) => const MyApp()),
   );
@@ -19,7 +26,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
 
       //theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
-      home: Onboardingscreen(),
+      home: Authscreen(),
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -27,6 +28,20 @@ class Drawerwidget extends StatelessWidget {
             ),
           ),
           ListTile(
+            leading: Icon(Icons.visibility_outlined),
+            title: Text(
+              'History',
+              style: GoogleFonts.fredoka(color: Colors.black87),
+            ),
+          ),
+          ListTile(
+            leading: Icon(Icons.favorite_outline_outlined),
+            title: Text(
+              'Favorite',
+              style: GoogleFonts.fredoka(color: Colors.black87),
+            ),
+          ),
+          ListTile(
             leading: Icon(Icons.bookmark_border),
             title: Text(
               'Short Stories',
@@ -49,6 +64,9 @@ class Drawerwidget extends StatelessWidget {
           ),
           Spacer(),
           ListTile(
+            onTap: () {
+              FirebaseAuth.instance.signOut();
+            },
             leading: Icon(Icons.logout_outlined, color: Colors.red),
             title: Text(
               'Log Out',
