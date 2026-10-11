@@ -1,19 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:whisperverse_app/categories/listofcategory.dart';
-import 'package:whisperverse_app/stories/storylist.dart';
+import 'package:whisperverse_app/firebase_repository/bookdatabase.dart';
+import 'package:whisperverse_app/screens/storypages.dart';
+import 'package:whisperverse_app/stories/storymodel.dart';
 import 'package:whisperverse_app/widgets/continuereadingbookcard.dart';
-import 'package:whisperverse_app/widgets/storybookcard.dart';
 
 class Homepagescreen extends StatefulWidget {
-  const new({super.key});
+  const Homepagescreen({super.key});
 
   @override
   State<Homepagescreen> createState() => _HomepagescreenState();
 }
 
 class _HomepagescreenState extends State<Homepagescreen> {
+  //final BookService _bookService = BookService();
+  // late Future<List<Book>> _storybook;
   final searchcontroller = TextEditingController();
+  final List<Book> mybook = BookService().books;
+
+  @override
+  void initState() {
+    super.initState();
+    BookService().getBooks();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -113,21 +123,111 @@ class _HomepagescreenState extends State<Homepagescreen> {
                   ),
                   SizedBox(height: 10),
 
-                  GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    clipBehavior: Clip.hardEdge,
-                    //padding: EdgeInsets.symmetric(vertical: 10),
-                    itemCount: storyList.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: crossAxisCount, // Number of columns
-                      mainAxisSpacing: 12.0, // Vertical spacing between items
-                      crossAxisSpacing:
-                          crossAxisSpacing, // Horizontal spacing between items
-                      childAspectRatio: dynamicAspectRatio, // Width-to-height ratio of each item
-                    ),
-                    itemBuilder: (context, index) {
-                      return Storybookcard(storymodel: storyList[index]);
+                  FutureBuilder<List<Book>>(
+                    future: BookService().getBooks(),
+                    builder: (context, asyncSnapshot) {
+                      final books = asyncSnapshot.data ?? [];
+                      return GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        clipBehavior: Clip.hardEdge,
+                        //padding: EdgeInsets.symmetric(vertical: 10),
+                        itemCount: books.length,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: crossAxisCount, // Number of columns
+                          mainAxisSpacing:
+                              12.0, // Vertical spacing between items
+                          crossAxisSpacing: crossAxisSpacing, // Horizontal spacing between items
+                          childAspectRatio: dynamicAspectRatio, // Width-to-height ratio of each item
+                        ),
+                        itemBuilder: (context, index) {
+                          // final Book books = storybooks[index];
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      Storypages(book: books[index]),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              clipBehavior: Clip.hardEdge,
+
+                              margin: EdgeInsets.only(top: 10),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(7),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color.fromARGB(17, 0, 0, 0),
+                                    spreadRadius: 2,
+                                    blurStyle: BlurStyle.outer,
+                                    blurRadius: 2,
+                                    offset: Offset(0, 1),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    height: 150,
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                      borderRadius:
+                                          BorderRadiusGeometry.circular(5),
+                                    ),
+
+                                    clipBehavior: Clip.hardEdge,
+                                    child: Image.asset(
+                                      'assets/images/cover2.jpg',
+                                      fit: BoxFit.cover,
+                                      //height: 100,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 4,
+                                        vertical: 8.0,
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            books[index].title,
+                                            style: GoogleFonts.nunito(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+
+                                          Text(
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            books[index].author,
+                                            style: GoogleFonts.nunito(
+                                              color: Colors.black45,
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.normal,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      );
                     },
                   ),
                   SizedBox(height: 30),

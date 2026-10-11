@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:whisperverse_app/screens/authenticationScreen/login.dart';
-import 'package:whisperverse_app/widgets/bottomNavigationBar.dart';
 import 'package:whisperverse_app/widgets/mainbuttons.dart';
 
 class Signupscreen extends StatefulWidget {

@@ -1,25 +1,65 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:whisperverse_app/providers/isfavoriteprovider.dart';
+import 'package:whisperverse_app/widgets/storybookcard.dart';
 
-class Favoritescreen extends StatefulWidget {
-  const new({super.key});
+class Favoritescreen extends ConsumerStatefulWidget {
+  const Favoritescreen({super.key});
 
   @override
-  State<Favoritescreen> createState() => _FavoritescreenState();
+  ConsumerState<Favoritescreen> createState() => _FavoritescreenState();
 }
 
-class _FavoritescreenState extends State<Favoritescreen> {
+class _FavoritescreenState extends ConsumerState<Favoritescreen> {
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    const int crossAxisCount = 3;
+    const double crossAxisSpacing = 10.0;
+
+    const double desiredItemHeight = 240.0;
+
+    final double totalSpacing = crossAxisSpacing * (crossAxisCount - 1);
+    final double itemWidth = (screenWidth - totalSpacing) / crossAxisCount;
+
+    final double dynamicAspectRatio = itemWidth / desiredItemHeight;
+    final favoritelist = ref.watch(favoriteProvider);
+
+    Widget content = Center(
+      child: Text(
+        'No Favorite yet...',
+        style: GoogleFonts.nunito(fontSize: 21),
+      ),
+    );
+
+    if (favoritelist.isNotEmpty) {
+      return content = Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20),
+        child: GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          clipBehavior: Clip.hardEdge,
+          //padding: EdgeInsets.symmetric(vertical: 10),
+          itemCount: favoritelist.length,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount, // Number of columns
+            mainAxisSpacing: 12.0, // Vertical spacing between items
+            crossAxisSpacing:
+                crossAxisSpacing, // Horizontal spacing between items
+            childAspectRatio:
+                dynamicAspectRatio, // Width-to-height ratio of each item
+          ),
+          itemBuilder: (context, index) {
+            return Storybookcard(storymodel: favoritelist[index]);
+          },
+        ),
+      );
+    }
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 243, 243, 243),
 
-      body: Center(
-        child: Text(
-          'No Favorite yet...',
-          style: GoogleFonts.nunito(fontSize: 21),
-        ),
-      ),
+      body: content,
 
       //fonts: Heading - Fredoka, Subheading - Nunito, Body - Literata
     );

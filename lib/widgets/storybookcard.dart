@@ -12,8 +12,9 @@ class Storybookcard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => Storypages()));
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => Storypages(book: storymodel)),
+        );
       },
       child: Container(
         clipBehavior: Clip.hardEdge,
@@ -45,7 +46,7 @@ class Storybookcard extends StatelessWidget {
 
               clipBehavior: Clip.hardEdge,
               child: Image.asset(
-                storymodel.coverImage,
+                storymodel.coverImage!,
                 fit: BoxFit.cover,
                 //height: 100,
               ),

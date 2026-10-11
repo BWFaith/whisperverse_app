@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:whisperverse_app/firebase_repository/bookdatabase.dart';
+import 'package:whisperverse_app/providers/isfavoriteprovider.dart';
+import 'package:whisperverse_app/stories/storymodel.dart';
 
-class Storypages extends StatelessWidget {
-  const new({super.key});
+class Storypages extends ConsumerWidget {
+  const Storypages({super.key, required this.book});
+  final Book book;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    late List<Book> myfavoritestory;
+    late Isfavoriteprovider isFavorite;
+    isFavorite = ref.watch(favoriteProvider.notifier);
+    myfavoritestory = ref.watch(favoriteProvider);
+    final isFav = myfavoritestory.any((b) => b.uid == book.uid);
+
     final double screenheight = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
@@ -14,7 +25,15 @@ class Storypages extends StatelessWidget {
         centerTitle: true,
         actionsPadding: EdgeInsets.only(right: 5),
         actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.favorite_border)),
+          IconButton(
+            onPressed: () {
+              isFavorite.toggleFavorite(book);
+            },
+            icon: Icon(
+              isFav ? Icons.favorite : Icons.favorite_border,
+              color: isFav ? Colors.red : null,
+            ),
+          ),
         ],
       ),
       backgroundColor: const Color.fromARGB(255, 240, 214, 204),

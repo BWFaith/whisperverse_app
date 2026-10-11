@@ -34,10 +34,17 @@ class _LoginPageState extends State<LoginPage> {
       //Navigator.of(context).pop();
 
       try {
-        await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: _email,
-          password: _password,
-        );
+        await FirebaseAuth.instance
+            .signInWithEmailAndPassword(email: _email, password: _password)
+            .then((nav) {
+              if (context.mounted) {
+                return Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => MyBottomnavigationbar(),
+                  ),
+                );
+              }
+            });
 
         // if (userLogin.user != null && context.mounted) {
         //   Navigator.of(context).pushAndRemoveUntil(
