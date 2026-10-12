@@ -44,7 +44,7 @@ class _ContinuereadingbookcardState extends State<Continuereadingbookcard> {
 
             clipBehavior: Clip.hardEdge,
             child: Image.asset(
-              storyList[0].coverImage!,
+              storyList[0].coverImage,
               fit: BoxFit.cover,
               //height: 100,
             ),

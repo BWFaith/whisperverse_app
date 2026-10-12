@@ -15,14 +15,14 @@ class Homepagescreen extends StatefulWidget {
 
 class _HomepagescreenState extends State<Homepagescreen> {
   //final BookService _bookService = BookService();
-  // late Future<List<Book>> _storybook;
+
   final searchcontroller = TextEditingController();
   final List<Book> mybook = BookService().books;
-
+  late Future<List<Book>> _storybook;
   @override
   void initState() {
     super.initState();
-    BookService().getBooks();
+    _storybook = BookService().getBooks();
   }
 
   @override
@@ -124,7 +124,7 @@ class _HomepagescreenState extends State<Homepagescreen> {
                   SizedBox(height: 10),
 
                   FutureBuilder<List<Book>>(
-                    future: BookService().getBooks(),
+                    future: _storybook,
                     builder: (context, asyncSnapshot) {
                       final books = asyncSnapshot.data ?? [];
                       return GridView.builder(

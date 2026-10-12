@@ -45,7 +45,7 @@ class BookService {
         title: data['title'] as String? ?? '',
 
         chapterNumber: (data['chapter'] as num?)?.toInt() ?? 0,
-        pages: data["pages"],
+        pages: List<String>.from(data['pages'] ?? []),
       );
     }).toList();
   }

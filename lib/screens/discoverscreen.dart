@@ -71,7 +71,7 @@ class _DiscoverscreenState extends State<Discoverscreen> {
 
                           clipBehavior: Clip.hardEdge,
                           child: Image.asset(
-                            storyList[0].coverImage!,
+                            storyList[0].coverImage,
                             fit: BoxFit.cover,
                             //height: 100,
                           ),

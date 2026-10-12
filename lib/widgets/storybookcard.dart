@@ -1,21 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:whisperverse_app/screens/storypages.dart';
 
 import 'package:whisperverse_app/stories/storymodel.dart';
 
 class Storybookcard extends StatelessWidget {
-  const Storybookcard({super.key, required this.storymodel});
+  const Storybookcard({super.key, required this.storymodel, this.onTap});
   final Book storymodel;
+  final void Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => Storypages(book: storymodel)),
-        );
-      },
+      onTap: onTap,
       child: Container(
         clipBehavior: Clip.hardEdge,
 
@@ -46,7 +42,7 @@ class Storybookcard extends StatelessWidget {
 
               clipBehavior: Clip.hardEdge,
               child: Image.asset(
-                storymodel.coverImage!,
+                'assets/images/cover2.jpg',
                 fit: BoxFit.cover,
                 //height: 100,
               ),
