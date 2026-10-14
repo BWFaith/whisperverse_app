@@ -5,6 +5,7 @@ import 'package:whisperverse_app/firebase_repository/bookdatabase.dart';
 import 'package:whisperverse_app/providers/isfavoriteprovider.dart';
 import 'package:whisperverse_app/stories/chaptermodel.dart';
 import 'package:whisperverse_app/stories/storymodel.dart';
+import 'package:whisperverse_app/widgets/texticonbutton.dart';
 
 class Storypages extends ConsumerStatefulWidget {
   const Storypages({super.key, required this.book});
@@ -30,6 +31,7 @@ class _StorypagesState extends ConsumerState<Storypages> {
     final isFav = myfavoritestory.any((b) => b.uid == widget.book.uid);
 
     final double screenheight = MediaQuery.of(context).size.height;
+    final double screenwidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 243, 243, 243),
@@ -57,11 +59,23 @@ class _StorypagesState extends ConsumerState<Storypages> {
           }
 
           final chapters = asyncSnapshot.data!;
-          final pages = chapters.first.pages;
+          final page = chapters[chapterIndex].pages;
+
+          Widget chapterTitle = Text(
+            chapters[chapterIndex].title,
+            style: GoogleFonts.fredoka(
+              fontSize: 25,
+              fontWeight: FontWeight.w500,
+              color: Colors.black54,
+            ),
+          );
+          if (chapters[chapterIndex].title.isEmpty) {
+            chapterTitle = SizedBox(height: 5);
+          }
 
           return PageView.builder(
             controller: controller,
-            itemCount: pages.length,
+            itemCount: page.length,
             itemBuilder: (_, index) => Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: 20,
@@ -78,20 +92,13 @@ class _StorypagesState extends ConsumerState<Storypages> {
                       color: Colors.black54,
                     ),
                   ),
-                  Text(
-                    chapters[index].title,
-                    style: GoogleFonts.fredoka(
-                      fontSize: 25,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black54,
-                    ),
-                  ),
+                  chapterTitle,
                   SizedBox(height: 10),
                   SizedBox(
-                    height: screenheight * 0.7,
+                    height: screenheight * 0.70,
                     child: SingleChildScrollView(
                       child: Text(
-                        pages[pageIndex],
+                        page[pageIndex],
                         style: GoogleFonts.literata(
                           fontSize: 20,
                           fontWeight: FontWeight.normal,
@@ -103,66 +110,101 @@ class _StorypagesState extends ConsumerState<Storypages> {
                   Padding(
                     padding: const EdgeInsets.only(top: 8),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        TextButton.icon(
-                          style: TextButton.styleFrom(
-                            iconColor: previousbuttonColor,
-                          ),
-                          onPressed: () {
-                            if (pageIndex == 0 && chapterIndex == 0) {
+                        Texticonbutton(
+                          onTap: () {
+                            final isFirstPage = pageIndex == 0;
+                            final isFirstChapter = chapterIndex == 0;
+
+                            if (!isFirstPage) {
                               setState(() {
-                                previousbuttonColor = Colors.grey;
+                                pageIndex--;
+                                nextbuttonColor = Colors.blueAccent;
+                              });
+                            } else if (!isFirstChapter) {
+                              setState(() {
+                                chapterIndex--;
+
+                                pageIndex =
+                                    chapters[chapterIndex].pages.length - 1;
+                                nextbuttonColor = Colors.blueAccent;
                               });
                             } else {
                               setState(() {
-                                pageIndex--;
+                                previousbuttonColor = Colors.grey;
                               });
                             }
                           },
-                          label: Text(
+                          buttonasset1: Icon(
+                            Icons.arrow_back,
+                            color: previousbuttonColor,
+                            size: 18,
+                          ),
+                          buttonasset2: Text(
                             'Previous',
                             style: TextStyle(
                               color: previousbuttonColor,
                               fontSize: 15,
                             ),
                           ),
-                          icon: Icon(Icons.arrow_back),
                         ),
-                        TextButton.icon(
-                          onPressed: () {
-                            setState(() {
-                              pageIndex++;
-                              previousbuttonColor = Colors.blueAccent;
-                            });
+                        SizedBox(width: screenwidth * 0.22),
+                        Text(
+                          '${pageIndex + 1}',
+                          style: GoogleFonts.nunito(
+                            fontSize: 13,
+                            color: Colors.black38,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        SizedBox(width: screenwidth * 0.25),
+                        Texticonbutton(
+                          onTap: () {
+                            final progress = ((pageIndex + 1) / page.length);
 
-                            if (pageIndex == pages.length) {
+                            BookService().saveBookmark(
+                              widget.book.uid,
+                              chapterIndex,
+                              pageIndex,
+                              progress,
+                            );
+
+                            final isLastPage = pageIndex >= page.length - 1;
+                            final isLastChapter =
+                                chapterIndex >= chapters.length - 1;
+
+                            if (!isLastPage) {
+                              // more pages in this chapter
+                              setState(() {
+                                pageIndex++;
+                                previousbuttonColor = Colors.blueAccent;
+                              });
+                            } else if (!isLastChapter) {
+                              // last page of chapter, but another chapter exists
                               setState(() {
                                 chapterIndex++;
                                 pageIndex = 0;
+                                previousbuttonColor = Colors.blueAccent;
                               });
-                            }
-                            if (chapterIndex == chapters.length ||
-                                pageIndex == pages.length) {
+                            } else {
                               setState(() {
                                 nextbuttonColor = Colors.grey;
-                                chapterIndex = 0;
-                                pageIndex = 0;
                               });
+
                               return;
                             }
                           },
-                          iconAlignment: IconAlignment.end,
-                          icon: Icon(Icons.arrow_forward),
-                          style: TextButton.styleFrom(
-                            iconColor: Colors.blueAccent,
-                          ),
-                          label: Text(
+                          buttonasset1: Text(
                             'Next',
                             style: TextStyle(
-                              color: Colors.blueAccent,
+                              color: nextbuttonColor,
                               fontSize: 15,
                             ),
+                          ),
+                          buttonasset2: Icon(
+                            Icons.arrow_forward,
+                            color: nextbuttonColor,
+                            size: 18,
                           ),
                         ),
                       ],

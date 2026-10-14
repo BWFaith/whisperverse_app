@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:whisperverse_app/providers/isfavoriteprovider.dart';
+import 'package:whisperverse_app/screens/storypages.dart';
 import 'package:whisperverse_app/widgets/storybookcard.dart';
 
 class Favoritescreen extends ConsumerStatefulWidget {
@@ -35,24 +36,49 @@ class _FavoritescreenState extends ConsumerState<Favoritescreen> {
 
     if (favoritelist.isNotEmpty) {
       return content = Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20),
-        child: GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          clipBehavior: Clip.hardEdge,
-          //padding: EdgeInsets.symmetric(vertical: 10),
-          itemCount: favoritelist.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: crossAxisCount, // Number of columns
-            mainAxisSpacing: 12.0, // Vertical spacing between items
-            crossAxisSpacing:
-                crossAxisSpacing, // Horizontal spacing between items
-            childAspectRatio:
-                dynamicAspectRatio, // Width-to-height ratio of each item
-          ),
-          itemBuilder: (context, index) {
-            return Storybookcard(storymodel: favoritelist[index]);
-          },
+        padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'My Favorite Books',
+              style: GoogleFonts.fredoka(
+                fontSize: 21,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            SizedBox(height: 10),
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              clipBehavior: Clip.hardEdge,
+              //padding: EdgeInsets.symmetric(vertical: 10),
+              itemCount: favoritelist.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount, // Number of columns
+                mainAxisSpacing: 12.0, // Vertical spacing between items
+                crossAxisSpacing:
+                    crossAxisSpacing, // Horizontal spacing between items
+                childAspectRatio:
+                    dynamicAspectRatio, // Width-to-height ratio of each item
+              ),
+              itemBuilder: (context, index) {
+                return Storybookcard(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            Storypages(book: favoritelist[index]),
+                      ),
+                    );
+                  },
+                  storymodel: favoritelist[index],
+                  imageUrl: favoritelist[index].coverImage,
+                );
+              },
+            ),
+          ],
         ),
       );
     }

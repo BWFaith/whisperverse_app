@@ -4,8 +4,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:whisperverse_app/stories/storymodel.dart';
 
 class Storybookcard extends StatelessWidget {
-  const Storybookcard({super.key, required this.storymodel, this.onTap});
+  const Storybookcard({
+    super.key,
+    required this.storymodel,
+    this.onTap,
+    required this.imageUrl,
+  });
   final Book storymodel;
+  final String imageUrl;
   final void Function()? onTap;
 
   @override
@@ -41,8 +47,8 @@ class Storybookcard extends StatelessWidget {
               ),
 
               clipBehavior: Clip.hardEdge,
-              child: Image.asset(
-                'assets/images/cover2.jpg',
+              child: Image.network(
+                imageUrl,
                 fit: BoxFit.cover,
                 //height: 100,
               ),

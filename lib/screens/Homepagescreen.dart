@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:whisperverse_app/categories/listofcategory.dart';
@@ -14,16 +15,18 @@ class Homepagescreen extends StatefulWidget {
 }
 
 class _HomepagescreenState extends State<Homepagescreen> {
-  //final BookService _bookService = BookService();
   String selectedCategory = 'All';
   final searchcontroller = TextEditingController();
   final List<Book> mybook = BookService().books;
   late Future<List<Book>> _storybook;
+  late Future<List<QueryDocumentSnapshot>> _bookmarks;
+
   Color buttonColor = Colors.white;
   @override
   void initState() {
     super.initState();
     _storybook = BookService().getBooks();
+    _bookmarks = BookService().getAllBookmarks();
   }
 
   @override
@@ -107,8 +110,8 @@ class _HomepagescreenState extends State<Homepagescreen> {
                             ),
 
                             clipBehavior: Clip.hardEdge,
-                            child: Image.asset(
-                              'assets/images/cover2.jpg',
+                            child: Image.network(
+                              books[index].coverImage,
                               fit: BoxFit.cover,
                               //height: 100,
                             ),
@@ -211,7 +214,41 @@ class _HomepagescreenState extends State<Homepagescreen> {
                         ),
                       ),
                       SizedBox(height: 10),
-                      Continuereadingbookcard(),
+                      FutureBuilder(
+                        future: _bookmarks,
+                        builder: (context, asyncSnapshot) {
+                          if (!asyncSnapshot.hasData ||
+                              asyncSnapshot.data!.isEmpty) {
+                            return const SizedBox();
+                          }
+                          final latest = asyncSnapshot.data!.first;
+                          final bookId = latest.id;
+                          final progress = (latest['progress'] as num)
+                              .toDouble();
+
+                          final matches = allBooks.where(
+                            (b) => b.uid == bookId,
+                          );
+                          if (matches.isEmpty) return const SizedBox();
+                          final book = matches.first;
+
+                          return Continuereadingbookcard(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => Storypages(book: book),
+                                ),
+                              );
+                              // print(progress);
+                            },
+                            bookCover: book.coverImage,
+                            bookCategory: book.category,
+                            bookTitie: book.title,
+                            bookDescription: book.description,
+                            percentage: progress.toInt(),
+                          );
+                        },
+                      ),
                       SizedBox(height: 10),
                       SizedBox(
                         height: 50,
