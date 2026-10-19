@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -37,6 +38,7 @@ class Storybookcard extends StatelessWidget {
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
@@ -47,9 +49,9 @@ class Storybookcard extends StatelessWidget {
               ),
 
               clipBehavior: Clip.hardEdge,
-              child: Image.network(
-                imageUrl,
+              child: CachedNetworkImage(
                 fit: BoxFit.cover,
+                imageUrl: imageUrl,
                 //height: 100,
               ),
             ),
@@ -57,7 +59,7 @@ class Storybookcard extends StatelessWidget {
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 4,
+                  horizontal: 6,
                   vertical: 8.0,
                 ),
                 child: Column(

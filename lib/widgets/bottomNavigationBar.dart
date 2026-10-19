@@ -19,6 +19,7 @@ class MyBottomnavigationbar extends StatefulWidget {
 
 class _MyBottomnavigationbarState extends State<MyBottomnavigationbar> {
   int _currentpageindex = 0;
+
   final List<Widget> _screens = [
     const Homepagescreen(),
     const Discoverscreen(),
@@ -32,10 +33,24 @@ class _MyBottomnavigationbarState extends State<MyBottomnavigationbar> {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 243, 243, 243),
       extendBody: true,
-      drawer: Drawerwidget(),
+      drawer: Drawerwidget(
+        tapfavorite: () {
+          Navigator.of(context).pop();
+          setState(() {
+            _currentpageindex = 2;
+          });
+        },
+        tapprofile: () {
+          Navigator.of(context).pop();
+          setState(() {
+            _currentpageindex = 3;
+          });
+        },
+      ),
       appBar: AppBar(
         actionsPadding: EdgeInsets.only(right: 5),
         leadingWidth: 30.0,
+
         forceMaterialTransparency: true,
         title: Image.asset(width: 100, 'assets/images/logo2.png'),
         actions: [

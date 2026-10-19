@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Drawerwidget extends StatelessWidget {
-  const new({super.key});
+  const Drawerwidget({super.key, this.tapfavorite, this.tapprofile});
+  final void Function()? tapfavorite;
+  final void Function()? tapprofile;
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +37,7 @@ class Drawerwidget extends StatelessWidget {
             ),
           ),
           ListTile(
+            onTap: tapfavorite,
             leading: Icon(Icons.favorite_outline_outlined),
             title: Text(
               'Favorite',
@@ -49,6 +52,7 @@ class Drawerwidget extends StatelessWidget {
             ),
           ),
           ListTile(
+            onTap: tapprofile,
             leading: Icon(Icons.person_3_outlined),
             title: Text(
               'Profile',

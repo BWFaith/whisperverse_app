@@ -14,6 +14,7 @@ class Signupscreen extends StatefulWidget {
 class _SignupscreenState extends State<Signupscreen> {
   bool isToggledObscureText = true;
   final _formKey = GlobalKey<FormState>();
+  bool showCircleprogress = false;
 
   // Track input values
   String _username = '';
@@ -55,13 +56,13 @@ class _SignupscreenState extends State<Signupscreen> {
   void signuserup() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-
-      showDialog(
-        context: context,
-        builder: (context) {
-          return Center(child: CircularProgressIndicator(color: Colors.white));
-        },
-      );
+      showCircleprogress = true;
+      // showDialog(
+      //   context: context,
+      //   builder: (context) {
+      //     return Center(child: CircularProgressIndicator(color: Colors.white));
+      //   },
+      // );
       Navigator.of(context).pop();
     }
     // ScaffoldMessenger.of(
@@ -140,8 +141,8 @@ class _SignupscreenState extends State<Signupscreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Center(
+      body: Center(
+        child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -163,12 +164,16 @@ class _SignupscreenState extends State<Signupscreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       TextFormField(
+                        cursorColor: Colors.blueAccent,
                         autocorrect: false,
                         decoration: const InputDecoration(
-                          helperStyle: TextStyle(color: Colors.blue),
-                          hintStyle: TextStyle(color: Colors.blue),
+                          floatingLabelStyle: TextStyle(color: Colors.grey),
+
                           focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.blue),
+                            borderSide: BorderSide(
+                              color: Colors.blue,
+                              width: 2.0,
+                            ),
                           ),
                           labelText: 'Choose a Username',
                           border: OutlineInputBorder(),
@@ -189,9 +194,14 @@ class _SignupscreenState extends State<Signupscreen> {
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
+                        cursorColor: Colors.blueAccent,
                         decoration: const InputDecoration(
+                          floatingLabelStyle: TextStyle(color: Colors.grey),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.blue),
+                            borderSide: BorderSide(
+                              color: Colors.blue,
+                              width: 2.0,
+                            ),
                           ),
                           labelText: 'Email Address',
                           border: OutlineInputBorder(),
@@ -214,7 +224,9 @@ class _SignupscreenState extends State<Signupscreen> {
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
+                        cursorColor: Colors.blueAccent,
                         decoration: InputDecoration(
+                          floatingLabelStyle: TextStyle(color: Colors.grey),
                           suffixIcon: IconButton(
                             color: Colors.black45,
                             onPressed: () {
@@ -229,7 +241,10 @@ class _SignupscreenState extends State<Signupscreen> {
                             ),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.blue),
+                            borderSide: BorderSide(
+                              color: Colors.blue,
+                              width: 2,
+                            ),
                           ),
                           labelText: 'Password',
                           border: OutlineInputBorder(),
@@ -252,7 +267,15 @@ class _SignupscreenState extends State<Signupscreen> {
 
                       Mainbuttons(
                         onTap: signuserup,
-                        buttonText: 'Create an account',
+                        buttonText: showCircleprogress
+                            ? CircularProgressIndicator()
+                            : Text(
+                                'Create an account',
+                                style: GoogleFonts.literata(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
                       ),
                       const SizedBox(height: 12),
                       Row(

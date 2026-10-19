@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lottie/lottie.dart';
 import 'package:whisperverse_app/firebase_repository/bookdatabase.dart';
 import 'package:whisperverse_app/providers/isfavoriteprovider.dart';
 import 'package:whisperverse_app/stories/chaptermodel.dart';
@@ -21,6 +22,28 @@ class _StorypagesState extends ConsumerState<Storypages> {
   int pageIndex = 0;
   Color nextbuttonColor = Colors.blueAccent;
   Color previousbuttonColor = Colors.grey;
+
+  double calculateProgress({
+    required List<Chapter> chapters,
+    required int chapterIndex,
+    required int pageIndex,
+  }) {
+    // total pages across ALL chapters
+    final totalPages = chapters.fold<int>(
+      0,
+      (sum, ch) => sum + ch.pages.length,
+    );
+    if (totalPages == 0) return 0;
+
+    // pages in every chapter before the current one
+    int pagesBefore = 0;
+    for (int i = 0; i < chapterIndex; i++) {
+      pagesBefore += chapters[i].pages.length;
+    }
+
+    final pagesRead = pagesBefore + pageIndex + 1;
+    return pagesRead / totalPages; // a value from 0.0 to 1.0
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +78,9 @@ class _StorypagesState extends ConsumerState<Storypages> {
         future: BookService().getChapters(widget.book.uid),
         builder: (context, asyncSnapshot) {
           if (!asyncSnapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(
+              child: Lottie.asset('assets/lottie/openbook.json', width: 200),
+            );
           }
 
           final chapters = asyncSnapshot.data!;
@@ -95,7 +120,7 @@ class _StorypagesState extends ConsumerState<Storypages> {
                   chapterTitle,
                   SizedBox(height: 10),
                   SizedBox(
-                    height: screenheight * 0.70,
+                    height: screenheight * 0.65,
                     child: SingleChildScrollView(
                       child: Text(
                         page[pageIndex],
@@ -108,7 +133,7 @@ class _StorypagesState extends ConsumerState<Storypages> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(top: 8),
+                    padding: const EdgeInsets.only(top: 12),
                     child: Row(
                       children: [
                         Texticonbutton(
@@ -148,7 +173,7 @@ class _StorypagesState extends ConsumerState<Storypages> {
                             ),
                           ),
                         ),
-                        SizedBox(width: screenwidth * 0.22),
+                        SizedBox(width: screenwidth * 0.23),
                         Text(
                           '${pageIndex + 1}',
                           style: GoogleFonts.nunito(
@@ -160,7 +185,11 @@ class _StorypagesState extends ConsumerState<Storypages> {
                         SizedBox(width: screenwidth * 0.25),
                         Texticonbutton(
                           onTap: () {
-                            final progress = ((pageIndex + 1) / page.length);
+                            final progress = calculateProgress(
+                              chapters: chapters,
+                              chapterIndex: chapterIndex,
+                              pageIndex: pageIndex,
+                            );
 
                             BookService().saveBookmark(
                               widget.book.uid,

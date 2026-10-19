@@ -15,7 +15,11 @@ class Texticonbutton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Row(spacing: 2, children: [buttonasset1, buttonasset2]),
+      child: Row(
+        // crossAxisAlignment: CrossAxisAlignment.center,
+        spacing: 2,
+        children: [buttonasset1, buttonasset2],
+      ),
     );
   }
 }

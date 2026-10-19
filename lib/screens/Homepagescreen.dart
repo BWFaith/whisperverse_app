@@ -18,14 +18,14 @@ class _HomepagescreenState extends State<Homepagescreen> {
   String selectedCategory = 'All';
   final searchcontroller = TextEditingController();
   final List<Book> mybook = BookService().books;
-  late Future<List<Book>> _storybook;
+  late Stream<List<Book>> _storybook;
   late Future<List<QueryDocumentSnapshot>> _bookmarks;
 
   Color buttonColor = Colors.white;
   @override
   void initState() {
     super.initState();
-    _storybook = BookService().getBooks();
+    _storybook = BookService().streamBooks();
     _bookmarks = BookService().getAllBookmarks();
   }
 
@@ -47,8 +47,8 @@ class _HomepagescreenState extends State<Homepagescreen> {
 
       body:
           //fonts: Heading - Fredoka, Subheading - Nunito, Body - Literata
-          FutureBuilder<List<Book>>(
-            future: _storybook,
+          StreamBuilder<List<Book>>(
+            stream: _storybook,
             builder: (context, asyncSnapshot) {
               final allBooks = asyncSnapshot.data ?? [];
               final books = selectedCategory == 'All'
@@ -99,6 +99,7 @@ class _HomepagescreenState extends State<Homepagescreen> {
                         ],
                       ),
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -119,7 +120,7 @@ class _HomepagescreenState extends State<Homepagescreen> {
                           Expanded(
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
-                                horizontal: 4,
+                                horizontal: 6,
                                 vertical: 8.0,
                               ),
                               child: Column(
@@ -214,7 +215,7 @@ class _HomepagescreenState extends State<Homepagescreen> {
                         ),
                       ),
                       SizedBox(height: 10),
-                      FutureBuilder(
+                      FutureBuilder<List<QueryDocumentSnapshot>>(
                         future: _bookmarks,
                         builder: (context, asyncSnapshot) {
                           if (!asyncSnapshot.hasData ||
@@ -245,7 +246,7 @@ class _HomepagescreenState extends State<Homepagescreen> {
                             bookCategory: book.category,
                             bookTitie: book.title,
                             bookDescription: book.description,
-                            percentage: progress.toInt(),
+                            percentage: (progress * 100).round(),
                           );
                         },
                       ),

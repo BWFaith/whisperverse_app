@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class Mainbuttons extends StatelessWidget {
   const Mainbuttons({super.key, required this.onTap, required this.buttonText});
   final void Function()? onTap;
-  final String buttonText;
+  final Widget buttonText;
 
   @override
   Widget build(BuildContext context) {
@@ -17,15 +16,7 @@ class Mainbuttons extends StatelessWidget {
           color: Colors.blueAccent,
           borderRadius: BorderRadius.circular(20),
         ),
-        child: Center(
-          child: Text(
-            buttonText,
-            style: GoogleFonts.literata(
-              fontSize: 16,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
+        child: Center(child: buttonText),
       ),
     );
   }

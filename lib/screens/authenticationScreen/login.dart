@@ -16,6 +16,7 @@ class _LoginPageState extends State<LoginPage> {
   bool isToggledObscureText = true;
   final _formKey = GlobalKey<FormState>();
 
+  bool showCircleprogress = false;
   // Track input values
   String _email = '';
   String _password = '';
@@ -23,13 +24,16 @@ class _LoginPageState extends State<LoginPage> {
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+      setState(() {
+        showCircleprogress = true;
+      });
 
-      showDialog(
-        context: context,
-        builder: (context) {
-          return Center(child: CircularProgressIndicator(color: Colors.white));
-        },
-      );
+      // showDialog(
+      //   context: context,
+      //   builder: (context) {
+      //     return Center(child: CircularProgressIndicator(color: Colors.white));
+      //   },
+      // );
 
       //Navigator.of(context).pop();
 
@@ -99,8 +103,8 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Center(
+      body: Center(
+        child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -122,7 +126,16 @@ class _LoginPageState extends State<LoginPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       TextFormField(
+                        cursorColor: Colors.blueAccent,
+                        autocorrect: false,
                         decoration: const InputDecoration(
+                          floatingLabelStyle: TextStyle(color: Colors.grey),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.blue,
+                              width: 2.0,
+                            ),
+                          ),
                           labelText: 'Email Address',
                           border: OutlineInputBorder(),
                         ),
@@ -144,7 +157,16 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
+                        cursorColor: Colors.blueAccent,
+                        autocorrect: false,
                         decoration: InputDecoration(
+                          floatingLabelStyle: TextStyle(color: Colors.grey),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.blue,
+                              width: 2.0,
+                            ),
+                          ),
                           suffixIcon: IconButton(
                             color: Colors.black45,
                             onPressed: () {
@@ -192,7 +214,18 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 24),
 
-                      Mainbuttons(onTap: _submitForm, buttonText: 'Login'),
+                      Mainbuttons(
+                        onTap: _submitForm,
+                        buttonText: showCircleprogress
+                            ? CircularProgressIndicator(color: Colors.white)
+                            : Text(
+                                'login',
+                                style: GoogleFonts.literata(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                      ),
                       const SizedBox(height: 12),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
