@@ -17,11 +17,19 @@ class Storypages extends ConsumerStatefulWidget {
 }
 
 class _StorypagesState extends ConsumerState<Storypages> {
-  final controller = PageController();
+  @override
+  void initState() {
+    super.initState();
+    BookService().saveViewed(widget.book.uid);
+    //ViewService().registerView(widget.book.uid);
+    //_loadBookmark();
+  }
+
   int chapterIndex = 0;
   int pageIndex = 0;
   Color nextbuttonColor = Colors.blueAccent;
   Color previousbuttonColor = Colors.grey;
+  PageController controller = PageController(initialPage: 0);
 
   double calculateProgress({
     required List<Chapter> chapters,
@@ -88,6 +96,8 @@ class _StorypagesState extends ConsumerState<Storypages> {
 
           Widget chapterTitle = Text(
             chapters[chapterIndex].title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: GoogleFonts.fredoka(
               fontSize: 25,
               fontWeight: FontWeight.w500,

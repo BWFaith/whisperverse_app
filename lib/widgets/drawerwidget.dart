@@ -1,6 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:whisperverse_app/screens/history.dart';
+import 'package:whisperverse_app/screens/shortstories.dart';
+import 'package:whisperverse_app/stories/storymodel.dart';
 
 class Drawerwidget extends StatelessWidget {
   const Drawerwidget({super.key, this.tapfavorite, this.tapprofile});
@@ -30,6 +33,12 @@ class Drawerwidget extends StatelessWidget {
             ),
           ),
           ListTile(
+            onTap: () {
+              Navigator.of(context).pop();
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (context) => HistoryScreen()));
+            },
             leading: Icon(Icons.visibility_outlined),
             title: Text(
               'History',
@@ -45,6 +54,12 @@ class Drawerwidget extends StatelessWidget {
             ),
           ),
           ListTile(
+            onTap: () {
+              Navigator.of(context).pop();
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (context) => Shortstories()));
+            },
             leading: Icon(Icons.bookmark_border),
             title: Text(
               'Short Stories',
@@ -60,6 +75,7 @@ class Drawerwidget extends StatelessWidget {
             ),
           ),
           ListTile(
+            onTap: () {},
             leading: Icon(Icons.settings_outlined),
             title: Text(
               'Settings',

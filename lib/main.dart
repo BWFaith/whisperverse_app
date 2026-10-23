@@ -12,9 +12,9 @@ import 'package:flutter/material.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  FirebaseFirestore.instance.settings = const Settings(
-    persistenceEnabled: true,
-  );
+  // FirebaseFirestore.instance.settings = const Settings(
+  //   persistenceEnabled: true,
+  // );
   runApp(
     DevicePreview(
       enabled: !kReleaseMode,

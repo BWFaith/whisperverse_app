@@ -1,30 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:whisperverse_app/firebase_repository/bookdatabase.dart';
+import 'package:whisperverse_app/providers/firebaseprovider.dart';
+import 'package:whisperverse_app/screens/categoryscreen.dart';
 import 'package:whisperverse_app/screens/storypages.dart';
 import 'package:whisperverse_app/stories/storylist.dart';
 import 'package:whisperverse_app/stories/storymodel.dart';
+import 'package:whisperverse_app/widgets/carouselcard.dart';
 import 'package:whisperverse_app/widgets/storybookcard.dart';
 
-class Discoverscreen extends StatefulWidget {
+class Discoverscreen extends ConsumerStatefulWidget {
   const Discoverscreen({super.key});
 
   @override
-  State<Discoverscreen> createState() => _DiscoverscreenState();
+  ConsumerState<Discoverscreen> createState() => _DiscoverscreenState();
 }
 
-class _DiscoverscreenState extends State<Discoverscreen> {
-  late Stream<List<Book>> _books;
-
+class _DiscoverscreenState extends ConsumerState<Discoverscreen> {
+  //late Future<List<Book>> _books;
+  late final List<Book> _featured;
   @override
   void initState() {
-    _books = BookService().streamBooks();
+    // _books = BookService().getBooks();
+    // _featured = ([..._books]..shuffle()).take(5).toList();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final allbooks = ref.watch(allbooksprovider);
     final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
 
     const int crossAxisCount = 3;
     const double crossAxisSpacing = 10.0;
@@ -41,13 +48,13 @@ class _DiscoverscreenState extends State<Discoverscreen> {
 
       body:
           //fonts: Heading - Fredoka, Subheading - Nunito, Body - Literata
-          StreamBuilder<List<Book>>(
-            stream: _books,
-            builder: (context, asyncSnapshot) {
-              final allbooks = asyncSnapshot.data ?? [];
+          allbooks.when(
+            error: (error, stackTrace) => Text('Errpr: $error'),
+            loading: () => const CircularProgressIndicator(),
+            data: (data) {
               final Map<String, List<Book>> groupedCategory = {};
 
-              for (final book in allbooks) {
+              for (final book in data) {
                 groupedCategory.putIfAbsent(book.category, () => []).add(book);
                 if (!groupedCategory.containsKey(book.category)) {
                   groupedCategory[book.category] = [];
@@ -65,111 +72,13 @@ class _DiscoverscreenState extends State<Discoverscreen> {
                   ),
                   child: Column(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 8.0,
-                          horizontal: 20,
-                        ),
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          clipBehavior: Clip.hardEdge,
-
-                          decoration: BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color.fromARGB(17, 0, 0, 0),
-                                spreadRadius: 2,
-                                blurStyle: BlurStyle.outer,
-                                blurRadius: 2,
-                                offset: Offset(0, 1),
-                              ),
-                            ],
-
-                            color: Colors.white70,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            spacing: 10,
-                            children: [
-                              Container(
-                                height: 80,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadiusGeometry.circular(
-                                    5,
-                                  ),
-                                ),
-
-                                clipBehavior: Clip.hardEdge,
-                                child: Image.asset(
-                                  'assets/images/cover2.jpg',
-                                  fit: BoxFit.cover,
-                                  //height: 100,
-                                ),
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      SizedBox(
-                                        width: 150,
-                                        child: Text(
-                                          storyList[0].title,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: GoogleFonts.nunito(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black87,
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(width: 30),
-                                      Row(
-                                        spacing: 3,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        children: [
-                                          Icon(
-                                            Icons.visibility_outlined,
-                                            size: 18,
-                                            color: Colors.black26,
-                                          ),
-                                          Text(
-                                            '3.7k',
-                                            style: GoogleFonts.nunito(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.black26,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 3),
-                                  SizedBox(
-                                    width: 225,
-                                    child: Text(
-                                      storyList[0].description,
-                                      maxLines: 3,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: GoogleFonts.nunito(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.normal,
-                                        color: Colors.black87,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                      SizedBox(
+                        height: screenHeight * 0.17,
+                        child: ListView.builder(
+                          itemCount: data.length,
+                          itemBuilder: (context, index) {
+                            return Carouselcard(books: data);
+                          },
                         ),
                       ),
                       ListView.builder(
@@ -206,7 +115,18 @@ class _DiscoverscreenState extends State<Discoverscreen> {
                                           ),
                                         ),
                                         GestureDetector(
-                                          onTap: () {},
+                                          onTap: () {
+                                            Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    Categoryscreen(
+                                                      categoryTitle:
+                                                          categoryName,
+                                                      books: categoryBooks,
+                                                    ),
+                                              ),
+                                            );
+                                          },
                                           child: Text(
                                             'View all',
                                             style: GoogleFonts.fredoka(

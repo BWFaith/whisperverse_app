@@ -1,36 +1,58 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:whisperverse_app/categories/listofcategory.dart';
 import 'package:whisperverse_app/firebase_repository/bookdatabase.dart';
+import 'package:whisperverse_app/providers/firebaseprovider.dart';
+import 'package:whisperverse_app/screens/searchbottomsheet.dart';
 import 'package:whisperverse_app/screens/storypages.dart';
 import 'package:whisperverse_app/stories/storymodel.dart';
 import 'package:whisperverse_app/widgets/continuereadingbookcard.dart';
+import 'package:whisperverse_app/widgets/storybookcard.dart';
 
-class Homepagescreen extends StatefulWidget {
+class Homepagescreen extends ConsumerStatefulWidget {
   const Homepagescreen({super.key});
 
   @override
-  State<Homepagescreen> createState() => _HomepagescreenState();
+  ConsumerState<Homepagescreen> createState() => _HomepagescreenState();
 }
 
-class _HomepagescreenState extends State<Homepagescreen> {
+class _HomepagescreenState extends ConsumerState<Homepagescreen> {
   String selectedCategory = 'All';
   final searchcontroller = TextEditingController();
   final List<Book> mybook = BookService().books;
-  late Stream<List<Book>> _storybook;
-  late Future<List<QueryDocumentSnapshot>> _bookmarks;
+  late Future<List<Book>> _storybook;
+  // late Future<List<QueryDocumentSnapshot>> _bookmarks;
 
   Color buttonColor = Colors.white;
-  @override
-  void initState() {
-    super.initState();
-    _storybook = BookService().streamBooks();
-    _bookmarks = BookService().getAllBookmarks();
+  // @override
+  // void initState() {
+  //   _storybook = BookService().getBooks();
+  //   _bookmarks = BookService().getAllBookmarks();
+  //   super.initState();
+  // }
+
+  void showSearchSheet(BuildContext context, List<Book> books) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled:
+          true, // lets the sheet grow tall and rise above the keyboard
+      useSafeArea: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => FractionallySizedBox(
+        heightFactor: 0.9, // sheet takes 90% of screen height
+        child: Searchbottomsheet(books: books),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final mybooks = ref.watch(allbooksprovider);
+    final bookmark = ref.watch(bookmarkedprovider);
     final double screenWidth = MediaQuery.of(context).size.width;
     const int crossAxisCount = 3;
     const double crossAxisSpacing = 10.0;
@@ -47,10 +69,10 @@ class _HomepagescreenState extends State<Homepagescreen> {
 
       body:
           //fonts: Heading - Fredoka, Subheading - Nunito, Body - Literata
-          StreamBuilder<List<Book>>(
-            stream: _storybook,
-            builder: (context, asyncSnapshot) {
-              final allBooks = asyncSnapshot.data ?? [];
+          mybooks.when(
+            error: (e, _) => Text('Error: $e'),
+            loading: () => const Center(child: CircularProgressIndicator()),
+            data: (allBooks) {
               final books = selectedCategory == 'All'
                   ? allBooks
                   : allBooks
@@ -81,78 +103,9 @@ class _HomepagescreenState extends State<Homepagescreen> {
                         ),
                       );
                     },
-                    child: Container(
-                      clipBehavior: Clip.hardEdge,
-
-                      margin: EdgeInsets.only(top: 10),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(7),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color.fromARGB(17, 0, 0, 0),
-                            spreadRadius: 2,
-                            blurStyle: BlurStyle.outer,
-                            blurRadius: 2,
-                            offset: Offset(0, 1),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            height: 150,
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadiusGeometry.circular(5),
-                            ),
-
-                            clipBehavior: Clip.hardEdge,
-                            child: Image.network(
-                              books[index].coverImage,
-                              fit: BoxFit.cover,
-                              //height: 100,
-                            ),
-                          ),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 8.0,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    books[index].title,
-                                    style: GoogleFonts.nunito(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-
-                                  Text(
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    books[index].author,
-                                    style: GoogleFonts.nunito(
-                                      color: Colors.black45,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.normal,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                    child: Storybookcard(
+                      storymodel: books[index],
+                      imageUrl: books[index].coverImage,
                     ),
                   );
                 },
@@ -191,6 +144,9 @@ class _HomepagescreenState extends State<Homepagescreen> {
                               SizedBox(width: 5),
                               Expanded(
                                 child: TextField(
+                                  onTap: () =>
+                                      showSearchSheet(context, allBooks),
+                                  readOnly: true,
                                   //textAlignVertical: TextAlignVertical.center,
                                   controller: searchcontroller,
                                   decoration: InputDecoration(
@@ -215,14 +171,14 @@ class _HomepagescreenState extends State<Homepagescreen> {
                         ),
                       ),
                       SizedBox(height: 10),
-                      FutureBuilder<List<QueryDocumentSnapshot>>(
-                        future: _bookmarks,
-                        builder: (context, asyncSnapshot) {
-                          if (!asyncSnapshot.hasData ||
-                              asyncSnapshot.data!.isEmpty) {
+                      bookmark.when(
+                        error: (error, stackTrace) => Text('Error: $error'),
+                        loading: () => const CircularProgressIndicator(),
+                        data: (bookmarkedbooks) {
+                          if (!bookmarkedbooks.isNotEmpty) {
                             return const SizedBox();
                           }
-                          final latest = asyncSnapshot.data!.first;
+                          final latest = bookmarkedbooks.first;
                           final bookId = latest.id;
                           final progress = (latest['progress'] as num)
                               .toDouble();
@@ -250,6 +206,7 @@ class _HomepagescreenState extends State<Homepagescreen> {
                           );
                         },
                       ),
+
                       SizedBox(height: 10),
                       SizedBox(
                         height: 50,

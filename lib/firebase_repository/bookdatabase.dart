@@ -94,4 +94,54 @@ class BookService {
 
     return snapshot.docs;
   }
+
+  Future<void> saveViewed(String bookId) async {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('viewed')
+        .doc(bookId)
+        .set({'viewedAt': FieldValue.serverTimestamp()});
+  }
+
+  Future<List<String>> getViewedIds() async {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+
+    final snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('viewed')
+        .orderBy('viewedAt', descending: true)
+        .limit(10)
+        .get();
+
+    return snapshot.docs.map((doc) => doc.id).toList();
+  }
+}
+
+class ViewService {
+  final _db = FirebaseFirestore.instance;
+
+  Future<void> registerView(String bookId) async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return; // not signed in, don't count
+
+    final viewedRef = _db
+        .collection('users')
+        .doc(uid)
+        .collection('viewedBooks')
+        .doc(bookId);
+
+    final bookRef = _db.collection('StoryBooks').doc(bookId);
+
+    await _db.runTransaction((tx) async {
+      final viewedDoc = await tx.get(viewedRef);
+      if (viewedDoc.exists) return; // already counted for this user
+
+      tx.set(viewedRef, {'viewedAt': FieldValue.serverTimestamp()});
+      tx.update(bookRef, {'viewCount': FieldValue.increment(1)});
+    });
+  }
 }
