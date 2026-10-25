@@ -54,7 +54,8 @@ class _ShortstoriesState extends ConsumerState<Shortstories> {
       ),
       body: shortstories.when(
         error: (error, stackTrace) => Text('Error: $error'),
-        loading: () => const CircularProgressIndicator(),
+        loading: () =>
+            const CircularProgressIndicator(color: Colors.blueAccent),
         data: (allBooks) {
           final mybooks = allBooks
               .where((book) => book.category == 'Short Stories')

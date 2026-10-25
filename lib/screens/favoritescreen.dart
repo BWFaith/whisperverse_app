@@ -25,67 +25,144 @@ class _FavoritescreenState extends ConsumerState<Favoritescreen> {
     final double itemWidth = (screenWidth - totalSpacing) / crossAxisCount;
 
     final double dynamicAspectRatio = itemWidth / desiredItemHeight;
+
     final favoritelist = ref.watch(favoriteProvider);
+    final favoriteAsync = ref.watch(favoriteBooksProvider);
 
-    Widget content = Center(
-      child: Text(
-        'No Favorite yet...',
-        style: GoogleFonts.nunito(fontSize: 21),
-      ),
-    );
+    // Widget content = favoriteAsync.when(
+    //   error: (error, stackTrace) => Text('Error: $error'),
+    //   loading: () => const CircularProgressIndicator(color: Colors.blueAccent),
+    //   data: (data) {
+    //     return SingleChildScrollView(
+    //       child: Padding(
+    //         padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20),
+    //         child: Column(
+    //           mainAxisSize: MainAxisSize.min,
+    //           crossAxisAlignment: CrossAxisAlignment.start,
+    //           children: [
+    //             Text(
+    //               'My Favorite Books',
+    //               style: GoogleFonts.fredoka(
+    //                 fontSize: 21,
+    //                 fontWeight: FontWeight.w500,
+    //               ),
+    //             ),
+    //             SizedBox(height: 10),
+    //             GridView.builder(
+    //               shrinkWrap: true,
+    //               physics: const NeverScrollableScrollPhysics(),
+    //               clipBehavior: Clip.hardEdge,
+    //               //padding: EdgeInsets.symmetric(vertical: 10),
+    //               itemCount: data.length,
+    //               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+    //                 crossAxisCount: crossAxisCount, // Number of columns
+    //                 mainAxisSpacing: 12.0, // Vertical spacing between items
+    //                 crossAxisSpacing:
+    //                     crossAxisSpacing, // Horizontal spacing between items
+    //                 childAspectRatio: dynamicAspectRatio, // Width-to-height ratio of each item
+    //               ),
+    //               itemBuilder: (context, index) {
+    //                 return Storybookcard(
+    //                   onTap: () {
+    //                     Navigator.of(context).push(
+    //                       MaterialPageRoute(
+    //                         builder: (context) => Storypages(book: data[index]),
+    //                       ),
+    //                     );
+    //                   },
+    //                   storymodel: data[index],
+    //                   imageUrl: data[index].coverImage,
+    //                 );
+    //               },
+    //             ),
+    //           ],
+    //         ),
+    //       ),
+    //     );
+    //   },
+    // );
 
-    if (favoritelist.isNotEmpty) {
-      return content = Padding(
-        padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'My Favorite Books',
-              style: GoogleFonts.fredoka(
-                fontSize: 21,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            SizedBox(height: 10),
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              clipBehavior: Clip.hardEdge,
-              //padding: EdgeInsets.symmetric(vertical: 10),
-              itemCount: favoritelist.length,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: crossAxisCount, // Number of columns
-                mainAxisSpacing: 12.0, // Vertical spacing between items
-                crossAxisSpacing:
-                    crossAxisSpacing, // Horizontal spacing between items
-                childAspectRatio:
-                    dynamicAspectRatio, // Width-to-height ratio of each item
-              ),
-              itemBuilder: (context, index) {
-                return Storybookcard(
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            Storypages(book: favoritelist[index]),
-                      ),
-                    );
-                  },
-                  storymodel: favoritelist[index],
-                  imageUrl: favoritelist[index].coverImage,
-                );
-              },
-            ),
-          ],
-        ),
-      );
-    }
+    // if (favoriteAsync.isEmpty) {
+    //   return content = Center(
+    //     child: Text(
+    //       'No Favorite yet...',
+    //       style: GoogleFonts.nunito(fontSize: 21),
+    //     ),
+    //   );
+    // }
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 243, 243, 243),
 
-      body: content,
+      body: favoriteAsync.when(
+        error: (error, stackTrace) => Text('Error: $error'),
+        loading: () => Center(
+          child: const CircularProgressIndicator(color: Colors.blueAccent),
+        ),
+        data: (data) {
+          Widget content = SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 15.0,
+                horizontal: 20,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'My Favorite Books',
+                    style: GoogleFonts.fredoka(
+                      fontSize: 21,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    clipBehavior: Clip.hardEdge,
+                    //padding: EdgeInsets.symmetric(vertical: 10),
+                    itemCount: data.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount, // Number of columns
+                      mainAxisSpacing: 12.0, // Vertical spacing between items
+                      crossAxisSpacing:
+                          crossAxisSpacing, // Horizontal spacing between items
+                      childAspectRatio: dynamicAspectRatio, // Width-to-height ratio of each item
+                    ),
+                    itemBuilder: (context, index) {
+                      return Storybookcard(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  Storypages(book: data[index]),
+                            ),
+                          );
+                        },
+                        storymodel: data[index],
+                        imageUrl: data[index].coverImage,
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+          if (data.isEmpty) {
+            return content = Center(
+              child: Text(
+                'No Favorite yet...',
+                style: GoogleFonts.nunito(fontSize: 21),
+              ),
+            );
+          }
+
+          return content;
+        },
+      ),
+
+      //content,
 
       //fonts: Heading - Fredoka, Subheading - Nunito, Body - Literata
     );

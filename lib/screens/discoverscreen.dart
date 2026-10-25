@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:whisperverse_app/firebase_repository/bookdatabase.dart';
 import 'package:whisperverse_app/providers/firebaseprovider.dart';
 import 'package:whisperverse_app/screens/categoryscreen.dart';
 import 'package:whisperverse_app/screens/storypages.dart';
-import 'package:whisperverse_app/stories/storylist.dart';
 import 'package:whisperverse_app/stories/storymodel.dart';
 import 'package:whisperverse_app/widgets/carouselcard.dart';
 import 'package:whisperverse_app/widgets/storybookcard.dart';

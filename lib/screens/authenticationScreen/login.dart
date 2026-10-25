@@ -219,7 +219,7 @@ class _LoginPageState extends State<LoginPage> {
                         buttonText: showCircleprogress
                             ? CircularProgressIndicator(color: Colors.white)
                             : Text(
-                                'login',
+                                'Login',
                                 style: GoogleFonts.literata(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,

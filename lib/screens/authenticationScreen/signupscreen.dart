@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:whisperverse_app/firebase_repository/authdata.dart';
 import 'package:whisperverse_app/screens/authenticationScreen/login.dart';
+import 'package:whisperverse_app/widgets/bottomNavigationBar.dart';
 import 'package:whisperverse_app/widgets/mainbuttons.dart';
 
 class Signupscreen extends StatefulWidget {
@@ -56,24 +59,44 @@ class _SignupscreenState extends State<Signupscreen> {
   void signuserup() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      showCircleprogress = true;
-      // showDialog(
-      //   context: context,
-      //   builder: (context) {
-      //     return Center(child: CircularProgressIndicator(color: Colors.white));
-      //   },
-      // );
-      Navigator.of(context).pop();
+      setState(() {
+        showCircleprogress = true;
+      });
     }
+
     // ScaffoldMessenger.of(
     //   context,
     // ).showSnackBar(SnackBar(content: Text('Processing Data for $_email...')));
 
     try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      final cred = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: _email,
         password: _password,
       );
+
+      // usersignUp(email: _email, password: _password, username: _username);
+      final user = cred.user!;
+
+      await user.updateDisplayName(_username.trim());
+
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .set({
+            'username': _username.trim(),
+            'email': user.email,
+            'createdAt': FieldValue.serverTimestamp(),
+          })
+          .then((value) {
+            if (context.mounted) {
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                  builder: (_) => const MyBottomnavigationbar(),
+                ),
+                (route) => false,
+              );
+            }
+          });
 
       // if (userAuth.user != null && context.mounted) {
       //   Navigator.of(context).pushAndRemoveUntil(
@@ -83,11 +106,12 @@ class _SignupscreenState extends State<Signupscreen> {
       // }
 
       print('user logged in');
-      // Navigator.of(context).pop();
+      //Navigator.of(context).pop();
     } on FirebaseAuthException catch (e) {
-      // Navigator.pop(context);
-      // ScaffoldMessenger.of(context).clearSnackBars();
-      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.code)));
+      //Navigator.pop(context);
+      ScaffoldMessenger.of(context).clearSnackBars();
+      // ScaffoldMessenger.of(context)
+      //     .showSnackBar(SnackBar(content: Text('Error: ${e.message}')));
 
       switch (e.code) {
         case 'email-already-in-use':
@@ -104,7 +128,7 @@ class _SignupscreenState extends State<Signupscreen> {
             SnackBar(content: Text('The email address is not valid.')),
           );
           print('The email address is not valid.');
-          Navigator.of(context).pop();
+
           break;
         case 'weak-password':
           ScaffoldMessenger.of(context).showSnackBar(
@@ -115,19 +139,14 @@ class _SignupscreenState extends State<Signupscreen> {
             ),
           );
           print('The password is too weak. Choose at least 6 characters.');
-          Navigator.of(context).pop();
+
           break;
         case 'operation-not-allowed':
           print('Email/Password sign up is not enabled in Firebase Console.');
           break;
         default:
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'An unknown authentication error occurred: ${e.message}',
-              ),
-            ),
-          );
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text('${e.message}')));
           print('An unknown authentication error occurred: ${e.message}');
       }
     } catch (e) {
@@ -149,7 +168,7 @@ class _SignupscreenState extends State<Signupscreen> {
               Image.asset('assets/images/logo2.png', width: 150),
               SizedBox(height: 15),
               Text(
-                'Welcome back, reader',
+                'Create your personal space',
                 style: GoogleFonts.nunito(
                   fontSize: 21,
                   fontWeight: FontWeight.w400,
@@ -268,7 +287,7 @@ class _SignupscreenState extends State<Signupscreen> {
                       Mainbuttons(
                         onTap: signuserup,
                         buttonText: showCircleprogress
-                            ? CircularProgressIndicator()
+                            ? CircularProgressIndicator(color: Colors.white)
                             : Text(
                                 'Create an account',
                                 style: GoogleFonts.literata(

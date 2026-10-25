@@ -22,7 +22,7 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   void initState() {
     super.initState();
     _story = BookService().getBooks();
-    historyList = BookService().getViewedIds();
+    // historyList = BookService().getViewedIds();
   }
 
   @override
@@ -49,7 +49,9 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
       ),
       body: viewedBooks.when(
         error: (error, stackTrace) => Text('Error: $error'),
-        loading: () => Center(child: const CircularProgressIndicator()),
+        loading: () => Center(
+          child: const CircularProgressIndicator(color: Colors.blueAccent),
+        ),
         data: (data) {
           Widget content = mybooks.when(
             error: (error, stackTrace) => Text('Error: $error'),
@@ -61,51 +63,53 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                   .map((matches) => matches.first)
                   .toList();
 
-              return Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 15.0,
-                  horizontal: 20,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Recently Viewed Books',
-                      style: GoogleFonts.fredoka(
-                        fontSize: 21,
-                        fontWeight: FontWeight.w500,
+              return SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 15.0,
+                    horizontal: 20,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Recently Viewed Books',
+                        style: GoogleFonts.fredoka(
+                          fontSize: 21,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 10),
-                    GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      clipBehavior: Clip.hardEdge,
-                      //padding: EdgeInsets.symmetric(vertical: 10),
-                      itemCount: viewedBooks.length,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: crossAxisCount,
-                        mainAxisSpacing: 12.0,
-                        crossAxisSpacing: crossAxisSpacing,
-                        childAspectRatio: dynamicAspectRatio,
+                      SizedBox(height: 10),
+                      GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        clipBehavior: Clip.hardEdge,
+                        //padding: EdgeInsets.symmetric(vertical: 10),
+                        itemCount: viewedBooks.length,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: crossAxisCount,
+                          mainAxisSpacing: 12.0,
+                          crossAxisSpacing: crossAxisSpacing,
+                          childAspectRatio: dynamicAspectRatio,
+                        ),
+                        itemBuilder: (context, index) {
+                          return Storybookcard(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      Storypages(book: viewedBooks[index]),
+                                ),
+                              );
+                            },
+                            storymodel: viewedBooks[index],
+                            imageUrl: viewedBooks[index].coverImage,
+                          );
+                        },
                       ),
-                      itemBuilder: (context, index) {
-                        return Storybookcard(
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    Storypages(book: viewedBooks[index]),
-                              ),
-                            );
-                          },
-                          storymodel: viewedBooks[index],
-                          imageUrl: viewedBooks[index].coverImage,
-                        );
-                      },
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               );
             },

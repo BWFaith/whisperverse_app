@@ -72,14 +72,25 @@ class BookService {
         });
   }
 
-  Future<DocumentSnapshot> getBookmark(String bookId) {
+  Future<DocumentSnapshot> getBookmark(String bookId) async {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    getBookmarkStream(bookId);
+    return await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('progress')
+        .doc(bookId)
+        .get();
+  }
+
+  Stream<DocumentSnapshot> getBookmarkStream(String bookId) {
     final uid = FirebaseAuth.instance.currentUser!.uid;
     return FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
         .collection('progress')
         .doc(bookId)
-        .get();
+        .snapshots();
   }
 
   Future<List<QueryDocumentSnapshot>> getAllBookmarks() async {
@@ -95,6 +106,17 @@ class BookService {
     return snapshot.docs;
   }
 
+  Stream<List<QueryDocumentSnapshot>> getAllBookmarksStream() {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('progress')
+        .orderBy('updatedAt', descending: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs);
+  }
+
   Future<void> saveViewed(String bookId) async {
     final uid = FirebaseAuth.instance.currentUser!.uid;
 
@@ -106,18 +128,20 @@ class BookService {
         .set({'viewedAt': FieldValue.serverTimestamp()});
   }
 
-  Future<List<String>> getViewedIds() async {
+  Stream<List<String>> getViewedIds() {
     final uid = FirebaseAuth.instance.currentUser!.uid;
 
-    final snapshot = await FirebaseFirestore.instance
+    final snapshot = FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
         .collection('viewed')
         .orderBy('viewedAt', descending: true)
         .limit(10)
-        .get();
+        .snapshots();
 
-    return snapshot.docs.map((doc) => doc.id).toList();
+    return snapshot.map((querySnapshot) {
+      return querySnapshot.docs.map((doc) => doc.id).toList();
+    });
   }
 }
 

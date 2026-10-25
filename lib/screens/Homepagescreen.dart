@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -52,7 +51,7 @@ class _HomepagescreenState extends ConsumerState<Homepagescreen> {
   @override
   Widget build(BuildContext context) {
     final mybooks = ref.watch(allbooksprovider);
-    final bookmark = ref.watch(bookmarkedprovider);
+    final bookmark = ref.watch(bookmarksStreamProvider);
     final double screenWidth = MediaQuery.of(context).size.width;
     const int crossAxisCount = 3;
     const double crossAxisSpacing = 10.0;

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:whisperverse_app/screens/history.dart';
 import 'package:whisperverse_app/screens/shortstories.dart';
-import 'package:whisperverse_app/stories/storymodel.dart';
 
 class Drawerwidget extends StatelessWidget {
   const Drawerwidget({super.key, this.tapfavorite, this.tapprofile});

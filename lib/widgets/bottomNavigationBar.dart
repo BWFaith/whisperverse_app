@@ -8,7 +8,6 @@ import 'package:whisperverse_app/screens/homepagescreen.dart';
 import 'package:whisperverse_app/screens/discoverscreen.dart';
 
 import 'package:whisperverse_app/screens/profilescreen.dart';
-import 'package:whisperverse_app/stories/storymodel.dart';
 import 'package:whisperverse_app/widgets/drawerwidget.dart';
 
 class MyBottomnavigationbar extends StatefulWidget {

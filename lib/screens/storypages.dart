@@ -22,7 +22,7 @@ class _StorypagesState extends ConsumerState<Storypages> {
     super.initState();
     BookService().saveViewed(widget.book.uid);
     //ViewService().registerView(widget.book.uid);
-    //_loadBookmark();
+    // _loadBookmark();
   }
 
   int chapterIndex = 0;
@@ -30,6 +30,19 @@ class _StorypagesState extends ConsumerState<Storypages> {
   Color nextbuttonColor = Colors.blueAccent;
   Color previousbuttonColor = Colors.grey;
   PageController controller = PageController(initialPage: 0);
+
+  Future<void> _loadBookmark() async {
+    final doc = await BookService().getBookmark(widget.book.uid);
+
+    if (doc.exists) {
+      chapterIndex = doc['chapterIndex'];
+      pageIndex = doc['pageIndex'];
+    }
+
+    setState(() {
+      controller = PageController(initialPage: pageIndex);
+    });
+  }
 
   double calculateProgress({
     required List<Chapter> chapters,
@@ -55,11 +68,14 @@ class _StorypagesState extends ConsumerState<Storypages> {
 
   @override
   Widget build(BuildContext context) {
+    final isFav =
+        ref.watch(favoriteIdsProvider).value?.contains(widget.book.uid) ??
+        false;
     late List<Book> myfavoritestory;
     late Isfavoriteprovider isFavorite;
     isFavorite = ref.watch(favoriteProvider.notifier);
     myfavoritestory = ref.watch(favoriteProvider);
-    final isFav = myfavoritestory.any((b) => b.uid == widget.book.uid);
+    final isFavv = myfavoritestory.any((b) => b.uid == widget.book.uid);
 
     final double screenheight = MediaQuery.of(context).size.height;
     final double screenwidth = MediaQuery.of(context).size.width;
@@ -72,7 +88,9 @@ class _StorypagesState extends ConsumerState<Storypages> {
         actions: [
           IconButton(
             onPressed: () {
-              isFavorite.toggleFavorite(widget.book);
+              ref
+                  .read(favoriteActionsProvider)
+                  .toggle(widget.book, isFavorite: isFav);
             },
             icon: Icon(
               isFav ? Icons.favorite : Icons.favorite_border,
