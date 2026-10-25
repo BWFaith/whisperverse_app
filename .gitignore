@@ -32,6 +32,9 @@ migrate_working_dir/
 .pub/
 /build/
 /coverage/
+build/
+.packages
+.flutter-plugins
 
 # Symbolication related
 app.*.symbols
@@ -46,3 +49,24 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+credentials/
+service-account*.json
+
+# IDE files
+.idea/
+.vscode/
+
+# Firebase local configuration and emulators
+.firebase/
+
+# Local debug logs
+*.log
+
