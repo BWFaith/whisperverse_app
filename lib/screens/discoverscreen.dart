@@ -17,7 +17,7 @@ class Discoverscreen extends ConsumerStatefulWidget {
 
 class _DiscoverscreenState extends ConsumerState<Discoverscreen> {
   //late Future<List<Book>> _books;
-  late final List<Book> _featured;
+
   @override
   void initState() {
     // _books = BookService().getBooks();
